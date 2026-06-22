@@ -263,75 +263,129 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
 }
 
 /* Apenas para telas até 700px */
+/* ==================== MELHORIAS AVANÇADAS PARA MOBILE ==================== */
 @media (max-width: 700px) {
-    body { padding: 8px; }
-    .container { border-radius: 12px; }
-    .tab-content { padding: 12px 10px; }
+    /* Ajuste geral de respiro */
+    body { padding: 10px; }
+    .container { border-radius: 16px; }
+    .tab-content { padding: 16px 12px; }
 
-    /* Ajustes apenas nas propriedades que queremos mudar - NÃO substitua o .tabs inteiro */
+    /* ===== 1. TABS (mais espaço e melhor toque) ===== */
     .tabs {
-        padding: 0 8px;
+        padding: 0 4px;
         gap: 4px;
-        flex-wrap: nowrap;       /* não quebra linha, só rola */
+        flex-wrap: nowrap;
         overflow-x: auto;
         scrollbar-width: thin;
         -webkit-overflow-scrolling: touch;
     }
-    /* Não mexa em display, background, border-bottom - eles já estão no .tabs original */
-
     .tab-btn {
-        padding: 8px 12px;
-        font-size: 0.75rem;
+        padding: 10px 14px;
+        font-size: 0.8rem;
         min-height: 44px;
         min-width: 44px;
         white-space: nowrap;
+        flex-shrink: 0; /* Garante que não fiquem espremidos */
     }
 
-    .timer-panel {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        border-radius: 16px;
-        padding: 12px 14px;
-    }
-    .timer { font-size: 1.4rem; }
-    .timer-btn {
-        padding: 10px 12px;
-        min-height: 44px;
-        width: 100%;
-    }
-
+    /* ===== 2. CARDS, TEXTOS E LEI SECA ===== */
     h1 { font-size: 1.3rem; padding-left: 10px; }
     h2 { font-size: 1.1rem; }
     h3 { font-size: 1rem; }
-
-    .option input[type="radio"],
-    .option input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        transform: scale(1.2);
-        margin-right: 6px;
-    }
-    .option label { font-size: 0.9rem; }
-
-    #edital ul li label {
-        display: inline-block;
-        margin-right: 6px;
-        margin-bottom: 4px;
-    }
-
-    #cronogramaContainer > div {
-        grid-template-columns: 1fr !important;
-    }
-
-    .legislacao-card summary {
-        font-size: 1.1rem !important;
-    }
-    .legislacao-card ul li {
+    
+    /* Evita que textos enormes (como artigos longos) estourem a tela */
+    .legislacao-card ul li, .card-teoria p, .card-lei p {
+        word-break: break-word;
+        overflow-wrap: break-word;
         font-size: 0.85rem;
     }
-}
+    .legislacao-card summary {
+        font-size: 1.1rem !important;
+        padding: 12px 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
 
+    /* ===== 3. SIMULADO E QUESTÕES ===== */
+    .timer-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        border-radius: 16px;
+        padding: 16px 14px;
+    }
+    .timer { font-size: 1.6rem; text-align: center; }
+    .timer-btn, .btn-resposta, .save-redacao {
+        padding: 12px 16px;   /* Botões mais gordinhos para os dedos */
+        min-height: 44px;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+    .timer-panel > span { text-align: center; }
+    
+    /* Paginação - bolinhas maiores */
+    .page-btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Questões - mais espaço interno */
+    .question { padding: 16px; }
+    .option { margin: 12px 0; }
+
+    /* ===== 4. CHECKBOXES E RÁDIOS (alvos gigantes para o dedo) ===== */
+    .option input[type="radio"],
+    .option input[type="checkbox"],
+    #edital ul li input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        transform: scale(1.3);
+        margin-right: 12px;
+        cursor: pointer;
+    }
+    .option label, #edital ul li label {
+        font-size: 0.9rem;
+        padding: 8px 0;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    /* ===== 5. CRONOGRAMA E RELATÓRIOS ===== */
+    /* Força os cards do cronograma para coluna única */
+    #cronogramaContainer > div > div {
+        grid-template-columns: 1fr !important;
+        padding: 12px !important;
+    }
+    
+    /* Dropdowns (selects) do Relatórios - maiores */
+    #relatorios select, #relatorios input[type="number"], #relatorios input[type="date"] {
+        font-size: 1rem;
+        min-height: 44px;
+        padding: 10px;
+    }
+
+    /* ===== 6. REDAÇÃO (Discursiva) ===== */
+    .redacao-area {
+        font-size: 1rem; /* 16px evita o zoom automático no iOS */
+        padding: 14px;
+    }
+
+    /* ===== 7. TABELAS - garantia de quebra de texto ===== */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-responsive table {
+        min-width: 480px; /* Garante que a tabela role, não esprema */
+        font-size: 0.75rem;
+    }
+    .table-responsive th, .table-responsive td {
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
