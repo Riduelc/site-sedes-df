@@ -246,13 +246,174 @@
             .tab-btn { padding: 10px 14px; font-size: 0.8rem; }
             .timer { font-size: 1.4rem; }
         }
+  /* ==================== MELHORIAS PARA MOBILE E TABLETS ==================== */
+
+/* Remove o delay de 300ms em botões no celular */
+button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
+    touch-action: manipulation;
+}
+
+/* Tabelas roláveis horizontalmente */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+}
+
+/* Apenas para telas até 700px */
+/* ==================== MELHORIAS AVANÇADAS PARA MOBILE ==================== */
+@media (max-width: 700px) {
+
+    /* Classe para centralizar e garantir a largura correta dos gráficos de barras */
+.chart-box {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 220px !important; /* altura responsiva que você já colocou */
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important; /* evita barras de rolagem extras */
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    margin: 0 auto !important; /* centraliza o elemento canvas */
+}
+
+    /* Ajuste geral de respiro */
+    body { padding: 10px; }
+    .container { border-radius: 16px; }
+    .tab-content { padding: 16px 12px; }
+
+    /* ===== 1. TABS (mais espaço e melhor toque) ===== */
+    .tabs {
+        padding: 0 4px;
+        gap: 4px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        min-height: 44px;
+        min-width: 44px;
+        white-space: nowrap;
+        flex-shrink: 0; /* Garante que não fiquem espremidos */
+    }
+
+    /* ===== 2. CARDS, TEXTOS E LEI SECA ===== */
+    h1 { font-size: 1.3rem; padding-left: 10px; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 1rem; }
+    
+    /* Evita que textos enormes (como artigos longos) estourem a tela */
+    .legislacao-card ul li, .card-teoria p, .card-lei p {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        font-size: 0.85rem;
+    }
+    .legislacao-card summary {
+        font-size: 1.1rem !important;
+        padding: 12px 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* ===== 3. SIMULADO E QUESTÕES ===== */
+    .timer-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        border-radius: 16px;
+        padding: 16px 14px;
+    }
+    .timer { font-size: 1.6rem; text-align: center; }
+    .timer-btn, .btn-resposta, .save-redacao {
+        padding: 12px 16px;   /* Botões mais gordinhos para os dedos */
+        min-height: 44px;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+    .timer-panel > span { text-align: center; }
+    
+    /* Paginação - bolinhas maiores */
+    .page-btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Questões - mais espaço interno */
+    .question { padding: 16px; }
+    .option { margin: 12px 0; }
+
+    /* ===== 4. CHECKBOXES E RÁDIOS (alvos gigantes para o dedo) ===== */
+    .option input[type="radio"],
+    .option input[type="checkbox"],
+    #edital ul li input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        transform: scale(1.3);
+        margin-right: 12px;
+        cursor: pointer;
+    }
+    .option label, #edital ul li label {
+        font-size: 0.9rem;
+        padding: 8px 0;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    /* ===== 5. CRONOGRAMA E RELATÓRIOS ===== */
+    /* Força os cards do cronograma para coluna única */
+    #cronogramaContainer > div > div {
+        grid-template-columns: 1fr !important;
+        padding: 12px !important;
+    }
+    
+    /* Dropdowns (selects) do Relatórios - maiores */
+    #relatorios select, #relatorios input[type="number"], #relatorios input[type="date"] {
+        font-size: 1rem;
+        min-height: 44px;
+        padding: 10px;
+    }
+
+    /* ===== 6. REDAÇÃO (Discursiva) ===== */
+    .redacao-area {
+        font-size: 1rem; /* 16px evita o zoom automático no iOS */
+        padding: 14px;
+    }
+
+    /* ===== 7. TABELAS - garantia de quebra de texto ===== */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-responsive table {
+        min-width: 480px; /* Garante que a tabela role, não esprema */
+        font-size: 0.75rem;
+    }
+    .table-responsive th, .table-responsive td {
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+}
+      
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-     <div class="tabs">
+
+        <div class="tabs">
         <button class="tab-btn" data-tab="edital">📋 Vislumbrando o Edital</button>
         <button class="tab-btn active" data-tab="estudar">📘 Conteúdo Direcionado</button>
         <button class="tab-btn" data-tab="leiseca">📖 Lei Seca Top Fucking Artigos</button>
@@ -1446,6 +1607,7 @@
 <h3>📈 Gráficos de progresso</h3>
 
 <!-- Gráfico 1 -->
+ 
 <div style="background: #f8fafc; border-radius: 20px; padding: 16px; margin-bottom: 24px; width: 100%;">
     <h4 style="margin: 0 0 12px 0;">📚 Horas e Páginas por disciplina</h4>
     <div style="height: 320px; width: 100%;">
@@ -2773,6 +2935,31 @@ function initAbaRelatorios() {
     let graficoNivel1 = null;
 
 function atualizarGraficos() {
+    // Serve para limitar os rótulos dos gráficos, evitando que fiquem muito longos
+   function abreviarRotulo(texto, limite = 30) {
+    // Se o texto já está dentro do limite, retorna ele
+    if (texto.length <= limite) return texto;
+
+    const palavras = texto.split(' ');
+    // Se tem 2 palavras ou menos, corta no limite com '…'
+    if (palavras.length <= 2) {
+        return texto.substring(0, limite) + '…';
+    }
+
+    // Abrevia cada palavra (exceto a primeira) com 3 letras + '.'
+    const abreviadas = palavras.map((pal, i) => {
+        if (i === 0) return pal; // primeira palavra inteira
+        if (pal.length <= 3) return pal; // palavras curtas não são abreviadas
+        return pal.substring(0, 3) + '.';
+    });
+
+    let resultado = abreviadas.join(' ');
+    // Se ainda ultrapassar o limite, corta no final com '…'
+    if (resultado.length > limite) {
+        resultado = resultado.substring(0, limite) + '…';
+    }
+    return resultado;
+}
     const logs = carregarLogs();
     if (logs.length === 0) {
         if (graficoHorasPaginas) { graficoHorasPaginas.destroy(); graficoHorasPaginas = null; }
@@ -2854,49 +3041,54 @@ function atualizarGraficos() {
     if (graficoAcertosErros) { graficoAcertosErros.destroy(); graficoAcertosErros = null; }
     if (graficoNivel1) { graficoNivel1.destroy(); graficoNivel1 = null; }
 
-    // ---------- Gráfico 1: Horas e Páginas ----------
-    const ctx1 = document.getElementById('graficoHorasPaginas').getContext('2d');
-    graficoHorasPaginas = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: labelsCompletas,
-            datasets: [
-                { label: 'Horas', data: horasData, backgroundColor: 'rgba(30,111,92,0.8)', borderColor: '#1e6f5c', borderWidth: 1, yAxisID: 'y' },
-                { label: 'Páginas', data: paginasData, backgroundColor: 'rgba(59,130,246,0.8)', borderColor: '#3b82f6', borderWidth: 1, yAxisID: 'y1' }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
-            scales: {
-                y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Horas' } },
-                y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'Páginas' }, grid: { drawOnChartArea: false } }
-            }
-        }
-    });
+// ---------- Gráfico 1: Horas e Páginas ----------
+// ---------- Gráfico 1: Horas e Páginas ----------
+const labelsTruncadas = labelsCompletas.map(label => abreviarRotulo(label, 30));
 
-    // ---------- Gráfico 2: Acertos, Erros e % Acertos ----------
-    const ctx2 = document.getElementById('graficoAcertosErros').getContext('2d');
-    graficoAcertosErros = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: labelsQuestoes,
-            datasets: [
-                { label: 'Acertos', data: certasData, backgroundColor: 'rgba(30,111,92,0.7)', borderColor: '#1e6f5c', borderWidth: 1, yAxisID: 'y' },
-                { label: 'Erros', data: erradasData, backgroundColor: 'rgba(220,38,38,0.7)', borderColor: '#dc2626', borderWidth: 1, yAxisID: 'y' },
-                { label: '% Acertos', type: 'line', data: percData, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.2)', borderWidth: 3, pointBackgroundColor: '#f59e0b', pointBorderColor: '#f59e0b', pointRadius: 5, fill: false, tension: 0.3, yAxisID: 'y1' }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
-            scales: {
-                y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Quantidade' } },
-                y1: { beginAtZero: true, position: 'right', max: 100, title: { display: true, text: '%' }, grid: { drawOnChartArea: false } }
-            }
+const ctx1 = document.getElementById('graficoHorasPaginas').getContext('2d');
+graficoHorasPaginas = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: labelsTruncadas,
+        datasets: [
+            { label: 'Horas', data: horasData, backgroundColor: 'rgba(30,111,92,0.8)', borderColor: '#1e6f5c', borderWidth: 1, yAxisID: 'y' },
+            { label: 'Páginas', data: paginasData, backgroundColor: 'rgba(59,130,246,0.8)', borderColor: '#3b82f6', borderWidth: 1, yAxisID: 'y1' }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+        scales: {
+            y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Horas' } },
+            y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'Páginas' }, grid: { drawOnChartArea: false } }
         }
-    });
+    }
+});
 
+// ---------- Gráfico 2: Acertos, Erros e % ----------
+// ---------- Gráfico 2: Acertos, Erros e % ----------
+const labelsTruncadas2 = labelsQuestoes.map(label => abreviarRotulo(label, 30));
+
+const ctx2 = document.getElementById('graficoAcertosErros').getContext('2d');
+graficoAcertosErros = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: labelsTruncadas2,
+        datasets: [
+            { label: 'Acertos', data: certasData, backgroundColor: 'rgba(30,111,92,0.7)', borderColor: '#1e6f5c', borderWidth: 1, yAxisID: 'y' },
+            { label: 'Erros', data: erradasData, backgroundColor: 'rgba(220,38,38,0.7)', borderColor: '#dc2626', borderWidth: 1, yAxisID: 'y' },
+            { label: '% Acertos', type: 'line', data: percData, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.2)', borderWidth: 3, pointBackgroundColor: '#f59e0b', pointBorderColor: '#f59e0b', pointRadius: 5, fill: false, tension: 0.3, yAxisID: 'y1' }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+        scales: {
+            y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Quantidade' } },
+            y1: { beginAtZero: true, position: 'right', max: 100, title: { display: true, text: '%' }, grid: { drawOnChartArea: false } }
+        }
+    }
+});
     // ---------- Gráfico 3: Tempo por Nível 1 ----------
     const ctx3 = document.getElementById('graficoNivel1').getContext('2d');
     const coresN1 = ['#1e6f5c', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
