@@ -410,6 +410,7 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -1470,6 +1471,27 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
 <!-- ==================== ABA RELATÓRIOS (COM DIÁRIO DE ESTUDOS) ==================== -->
 <div id="relatorios" class="tab-content">
     <h2>📊 Relatórios de Estudo</h2>
+<!-- Bloco de Login (aparece quando deslogado) -->
+<div id="login-section" style="text-align: center; padding: 40px 20px; background: #f8fafc; border-radius: 24px; margin: 20px 0; display: none;">
+    <h3 style="margin-bottom: 10px;">🔐 Acesse seus dados</h3>
+    <p style="margin-bottom: 20px; color: #4b5563;">Faça login com sua conta Google para salvar seu progresso e acessar de qualquer dispositivo.</p>
+    <button onclick="fazerLoginGoogle()" style="background: #1e6f5c; color: white; border: none; padding: 12px 30px; border-radius: 40px; font-size: 1rem; cursor: pointer; font-weight: bold;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+        Entrar com Google
+    </button>
+</div>
+
+<!-- Bloco de Conteúdo (aparece quando logado) -->
+<div id="app-content" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <span style="font-size: 0.9rem; color: #4b5563;">✅ Logado como: <strong id="userEmail"></strong></span>
+        <button onclick="fazerLogout()" style="background: #dc2626; color: white; border: none; padding: 6px 16px; border-radius: 30px; cursor: pointer; font-size: 0.8rem;">Sair</button>
+    </div>
+
+    <!-- Todo o restante do conteúdo da aba Relatórios (os painéis, formulários, tabelas, gráficos) deve ficar AQUI, dentro de #app-content -->
+    <!-- ... (seu código existente dos relatórios) ... -->
+</div>
+
     <p>Acompanhe seu progresso (dados automáticos + lançamentos manuais).</p>
 
     <!-- ========== PAINEL DE ESTATÍSTICAS AUTOMÁTICAS ========== -->
@@ -1644,6 +1666,7 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
 
+    
     // --------------------------------------------------------
     // 1. INICIALIZAÇÃO DA ABA SIMULADO (250 questões + timer)
     // --------------------------------------------------------
@@ -2619,51 +2642,132 @@ function initAbaRelatorios() {
 
         // Tornar funções de acesso globais para uso nos botões de exclusão
   
-            // ==================== INICIALIZAR FIREBASE (COLOQUE SEU config AQUI) ====================
-    const firebaseConfig = {
-  apiKey: "AIzaSyAIwjhoVI6DZU_1Q9JRyNjCfFN5agh65Bc",
-  authDomain: "estudos-sedes-df.firebaseapp.com",
-  databaseURL: "https://estudos-sedes-df-default-rtdb.firebaseio.com",
-  projectId: "estudos-sedes-df",
-  storageBucket: "estudos-sedes-df.firebasestorage.app",
-  messagingSenderId: "1070260903912",
-  appId: "1:1070260903912:web:0472aa781529776024ce5d"
+ // ==================== INICIALIZAR FIREBASE ====================
+const firebaseConfig = {
+    apiKey: "AIzaSyAIwjhoVI6DZU_1Q9JRyNjCfFN5agh65Bc",
+    authDomain: "estudos-sedes-df.firebaseapp.com",
+    databaseURL: "https://estudos-sedes-df-default-rtdb.firebaseio.com",
+    projectId: "estudos-sedes-df",
+    storageBucket: "estudos-sedes-df.firebasestorage.app",
+    messagingSenderId: "1070260903912",
+    appId: "1:1070260903912:web:0472aa781529776024ce5d"
 };
 
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
 
-    // ==================== FUNÇÕES DE ARMAZENAMENTO (HÍBRIDAS) ====================
-    
-    // 1. Carregar logs (agora síncrono, só lê o cache local)
-    function carregarLogs() {
-        const local = localStorage.getItem('sedes_manual_logs_fallback');
-        return local ? JSON.parse(local) : [];
+let currentUser = null; // Guarda o usuário logado
+
+// ==================== CONTROLE DE LOGIN COM GOOGLE ====================
+
+// Função chamada pelo botão de login
+function fazerLoginGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            currentUser = result.user;
+            console.log('Login realizado com:', currentUser.email);
+            // Após login, inicia o ouvinte e carrega os dados
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            iniciarOuvinteFirebase();
+            renderizarTabela();
+            atualizarGraficos();
+        })
+        .catch((error) => {
+            console.error('Erro no login:', error);
+            alert('Erro ao fazer login. Tente novamente.');
+        });
+}
+
+// Função para fazer logout
+function fazerLogout() {
+    auth.signOut().then(() => {
+        currentUser = null;
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('app-content').style.display = 'none';
+        // Limpa a tela quando desloga
+        document.getElementById('corpoTabelaManual').innerHTML = '';
+        document.getElementById('relTempoTotal').innerText = '--';
+        // Remove o ouvinte para evitar vazamento de memória
+        if (currentUserLogsRef) {
+            currentUserLogsRef.off();
+        }
+    }).catch((error) => {
+        console.error('Erro ao fazer logout:', error);
+    });
+}
+
+// Observador do Firebase (executa automaticamente quando a página abre)
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUser = user;
+        // Usuário já está logado
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        iniciarOuvinteFirebase();
+        renderizarTabela();
+        atualizarGraficos();
+    } else {
+        currentUser = null;
+        // Usuário NÃO está logado
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('app-content').style.display = 'none';
     }
+});
 
-    // 2. Salvar logs (salva local e envia para o Firebase)
-    function salvarLogs(logs) {
-        // Salva no cache local (instantâneo)
-        localStorage.setItem('sedes_manual_logs_fallback', JSON.stringify(logs));
-        // Salva no Firebase (para outros dispositivos)
-        const ref = database.ref('sedes_logs');
+// ==================== FUNÇÕES DE ARMAZENAMENTO (HÍBRIDAS) ====================
+
+let currentUserLogsRef = null; // Guarda a referência do banco do usuário atual
+
+// 1. Carregar logs (lê do cache local)
+function carregarLogs() {
+    const local = localStorage.getItem('sedes_manual_logs_fallback');
+    return local ? JSON.parse(local) : [];
+}
+
+// 2. Salvar logs (salva local e envia para o Firebase do usuário)
+function salvarLogs(logs) {
+    // Salva no cache local (instantâneo)
+    localStorage.setItem('sedes_manual_logs_fallback', JSON.stringify(logs));
+    
+    // Salva no Firebase, mas APENAS se o usuário estiver logado
+    if (currentUser) {
+        const ref = database.ref('users/' + currentUser.uid + '/logs');
         ref.set(logs).catch(err => console.error("Erro ao salvar no Firebase:", err));
     }
+}
 
-    // 3. Ouvinte do Firebase (atualiza automaticamente quando outro dispositivo muda)
-    function iniciarOuvinteFirebase() {
-        const ref = database.ref('sedes_logs');
-        ref.on('value', (snapshot) => {
-            const logs = snapshot.val();
-            if (logs) {
-                // Atualiza o cache local com os dados que vieram da nuvem
-                localStorage.setItem('sedes_manual_logs_fallback', JSON.stringify(logs));
-                // Re-renderiza a interface com os dados atualizados
-                renderizarTabela();
-                atualizarGraficos();
-            }
-        });
+// 3. Ouvinte do Firebase (atualiza quando outro dispositivo muda os dados do usuário)
+function iniciarOuvinteFirebase() {
+    // Remove o ouvinte antigo se existir (para evitar duplicidade)
+    if (currentUserLogsRef) {
+        currentUserLogsRef.off();
+        currentUserLogsRef = null;
     }
+
+    if (!currentUser) return; // Se não tiver usuário, não cria o ouvinte
+
+    // Cria a referência específica para o ID do usuário logado
+    currentUserLogsRef = database.ref('users/' + currentUser.uid + '/logs');
+    
+    currentUserLogsRef.on('value', (snapshot) => {
+        const logs = snapshot.val();
+        if (logs) {
+            // Atualiza o cache local com os dados que vieram da nuvem
+            localStorage.setItem('sedes_manual_logs_fallback', JSON.stringify(logs));
+            // Re-renderiza a interface
+            renderizarTabela();
+            atualizarGraficos();
+        } else {
+            // Se o banco estiver vazio, limpa o cache local
+            localStorage.removeItem('sedes_manual_logs_fallback');
+            renderizarTabela();
+            atualizarGraficos();
+        }
+    });
+}
 
     // Chama o ouvinte uma única vez na inicialização
     iniciarOuvinteFirebase();
