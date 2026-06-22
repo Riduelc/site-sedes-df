@@ -2699,6 +2699,11 @@ function fazerLogout() {
     });
 }
 
+// Coloque isso APÓS a definição das funções fazerLoginGoogle e fazerLogout
+window.fazerLoginGoogle = fazerLoginGoogle;
+window.fazerLogout = fazerLogout;
+
+
 // Observador do Firebase (executa automaticamente quando a página abre)
 auth.onAuthStateChanged(user => {
     if (user) {
