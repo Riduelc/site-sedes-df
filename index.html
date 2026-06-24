@@ -424,7 +424,7 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
         <button class="tab-btn" data-tab="legislacao">⚖️ Legislação completa</button>
          <button class="tab-btn" data-tab="simuladoReal">🎯 Simulado Real (60q)</button>
         <button class="tab-btn" data-tab="relatorios">📊 Relatórios</button>
-        <button class="tab-btn" data-tab="dicas">🚀 Dicas Antiprocrastinação</button>
+        <button class="tab-btn" data-tab="dicas">🚀 Dicas Anti-Procrastinação</button>
        
     </div>
 <div class="container">
@@ -1468,9 +1468,9 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
     <div id="resultadoReal" style="margin-top: 20px; background: #eef2ff; padding: 16px; border-radius: 24px; display: none;"></div>
 </div>
 
-<!-- ==================== ABA DICAS ANTIPROCASTINAÇÃO ==================== -->
+<!-- ==================== ABA DICAS ANTI-PROCASTINAÇÃO ==================== -->
 <div id="dicas" class="tab-content">
-    <h1>🚀 Dicas Antiprocrastinação – Comece Agora!</h1>
+    <h1>🚀 Dicas Anti-Procrastinação – Comece Agora!</h1>
     <p style="margin-bottom: 24px; color: #1e2a3e;"><strong>⚡ Você já tem o site, os materiais, o edital e a estratégia.</strong> O que falta é <strong>ação</strong>. Aqui estão as ferramentas para vencer o bloqueio e começar a estudar <strong>hoje</strong>.</p>
 
     <!-- ==================== DICA 1: REGRA DOS 5 MINUTOS ==================== -->
@@ -1727,16 +1727,31 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
                 </select>
             </div>
             <div>
-                <label><strong>Tempo (h:m)</strong></label>
-                <div style="display: flex; gap: 4px;">
-                    <select id="horas" style="width: 50%; padding: 8px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                        <option value="0">0h</option><option value="1">1h</option><option value="2">2h</option>
-                        <option value="3">3h</option><option value="4">4h</option><option value="5">5h</option>
+                <label><strong>Tempo por ciclo</strong></label>
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    <select id="cicloTempo" style="width: 50%; padding: 8px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                        <option value="15">15min</option>
+                        <option value="25" selected>25min</option>
+                        <option value="30">30min</option>
+                        <option value="45">45min</option>
+                        <option value="60">60min</option>
                     </select>
-                    <select id="minutos" style="width: 50%; padding: 8px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                        <option value="0">0m</option><option value="15">15m</option>
-                        <option value="30">30m</option><option value="45">45m</option>
+                    <span style="margin: 0 4px;">×</span>
+                    <select id="multiplicadorCiclo" style="width: 40%; padding: 8px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
                     </select>
+                    <span style="font-size: 0.9rem; font-weight: bold; color: #1e6f5c;">
+                        = <span id="tempoTotalCiclo">25</span> min
+                    </span>
                 </div>
             </div>
             <div>
@@ -1840,6 +1855,48 @@ button, .tab-btn, .timer-btn, .page-btn, .btn-resposta, .save-redacao {
         <p style="color: #94a3b8; font-style: italic;">Nenhum dado de questões registrado ainda.</p>
     </div>
 </div>
+
+<!-- ========== NOVAS MÉTRICAS DE TEMPO POR PÁGINA ========== -->
+<div style="margin-top: 30px; background: #f8fafc; border-radius: 20px; padding: 20px;">
+    <h3>⏱️ Métricas de Tempo por Página</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0;">
+        <div class="avaliacao-card" style="text-align: center;">
+            <strong>📊 Média geral</strong>
+            <div id="mediaGeralMinutosPagina" style="font-size: 2rem; font-weight: bold; color: #1e6f5c;">--</div>
+            <small>minutos por página</small>
+        </div>
+        <div class="avaliacao-card" style="text-align: center;">
+            <strong>📖 Total de páginas</strong>
+            <div id="totalPaginasGeral" style="font-size: 2rem; font-weight: bold; color: #3b82f6;">--</div>
+        </div>
+        <div class="avaliacao-card" style="text-align: center;">
+            <strong>⏱️ Tempo total</strong>
+            <div id="tempoTotalGeral" style="font-size: 2rem; font-weight: bold; color: #f59e0b;">--</div>
+            <small style="display: none;">minutos</small>
+        </div>
+    </div>
+
+    <h4>📋 Detalhamento por disciplina</h4>
+    <div class="table-responsive">
+        <table id="tabelaMetriasPorDisciplina" style="width: 100%; font-size: 0.85rem;">
+            <thead>
+                <tr style="background: #eef2ff;">
+                    <th>Disciplina (Nível 2)</th>
+                    <th>Total de páginas</th>
+                    <th>Tempo total (min)</th>
+                    <th>Média (min/página)</th>
+                </tr>
+            </thead>
+            <tbody id="corpoMetriasPorDisciplina"></tbody>
+        </table>
+    </div>
+
+    <h4>📈 Gráfico – Minutos por página por disciplina</h4>
+    <div style="height: 250px;">
+        <canvas id="graficoMinutosPorPagina"></canvas>
+    </div>
+</div>
+
 <script>
 // ============================================================
 // CÓDIGO MODULAR – Cada aba tem sua própria função isolada
@@ -1983,6 +2040,24 @@ document.addEventListener('DOMContentLoaded', function() {
         renderQuestionsPage(1);
         updatePagination();
         updateTimerDisplay();
+
+
+// Atualiza o total de minutos exibido ao lado dos seletores
+const cicloSelect = document.getElementById('cicloTempo');
+const multSelect = document.getElementById('multiplicadorCiclo');
+const tempoTotalSpan = document.getElementById('tempoTotalCiclo');
+
+function atualizarTotalCiclo() {
+    const ciclo = parseInt(cicloSelect.value) || 0;
+    const mult = parseInt(multSelect.value) || 0;
+    tempoTotalSpan.textContent = ciclo * mult;
+}
+
+cicloSelect.addEventListener('change', atualizarTotalCiclo);
+multSelect.addEventListener('change', atualizarTotalCiclo);
+atualizarTotalCiclo(); // inicializa
+
+
     }
 
     // --------------------------------------------------------
@@ -2945,11 +3020,13 @@ function iniciarOuvinteFirebase() {
             // Re-renderiza a interface
             renderizarTabela();
             atualizarGraficos();
+            atualizarMetricasTempoPorPagina(); // 👈 ADICIONE AQUI
         } else {
             // Se o banco estiver vazio, limpa o cache local
             localStorage.removeItem('sedes_manual_logs_fallback');
             renderizarTabela();
             atualizarGraficos();
+            atualizarMetricasTempoPorPagina(); // 👈 ADICIONE AQUI
         }
     });
 }
@@ -3116,46 +3193,59 @@ function iniciarOuvinteFirebase() {
 
     // ---------- 4. GERENCIAR DADOS MANUAIS (localStorage) ----------
 
-    function adicionarLog() {
-        const n1 = nivel1.value;
-        const n2 = nivel2.value;
-        const n3 = nivel3.value;
-        if (!n1 || !n2 || !n3) {
-            alert('Selecione todos os níveis (N1, N2, N3).');
-            return;
-        }
-        const tipo = tipoEstudo.value;
-        const h = parseInt(horas.value) || 0;
-        const m = parseInt(minutos.value) || 0;
-        const pages = parseInt(paginas.value) || 0;
-        const cert = parseInt(certas.value) || 0;
-        const err = parseInt(erradas.value) || 0;
-        const total = cert + err;
-        const perc = total > 0 ? Math.round((cert / total) * 100) : 0;
-        const data = dataEstudo.value || new Date().toISOString().slice(0, 10);
-
-        const log = {
-            id: Date.now(),
-            data,
-            nivel1: n1,
-            nivel2: n2,
-            nivel3: n3,
-            tipo,
-            horas: h,
-            minutos: m,
-            paginas: pages,
-            certas: cert,
-            erradas: err,
-            total,
-            percentual: perc
-        };
-
-        const logs = carregarLogs();
-        logs.push(log);
-        salvarLogs(logs);
-        renderizarTabela();
-        atualizarGraficos();
+function adicionarLog() {
+    const n1 = nivel1.value;
+    const n2 = nivel2.value;
+    const n3 = nivel3.value;
+    if (!n1 || !n2 || !n3) {
+        alert('Selecione todos os níveis (N1, N2, N3).');
+        return;
     }
+    const tipo = tipoEstudo.value;
+    // Lê ciclo e multiplicador
+    const ciclo = parseInt(document.getElementById('cicloTempo').value) || 0;
+    const multiplicador = parseInt(document.getElementById('multiplicadorCiclo').value) || 0;
+    const totalMinutos = ciclo * multiplicador;
+
+    if (totalMinutos === 0) {
+        alert('O tempo total deve ser maior que zero.');
+        return;
+    }
+
+    // Converte para horas e minutos
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+
+    const pages = parseInt(paginas.value) || 0;
+    const cert = parseInt(certas.value) || 0;
+    const err = parseInt(erradas.value) || 0;
+    const total = cert + err;
+    const perc = total > 0 ? Math.round((cert / total) * 100) : 0;
+    const data = dataEstudo.value || new Date().toISOString().slice(0, 10);
+
+    const log = {
+        id: Date.now(),
+        data,
+        nivel1: n1,
+        nivel2: n2,
+        nivel3: n3,
+        tipo,
+        horas: horas,
+        minutos: minutos,
+        paginas: pages,
+        certas: cert,
+        erradas: err,
+        total,
+        percentual: perc
+    };
+
+    const logs = carregarLogs();
+    logs.push(log);
+    salvarLogs(logs);
+    renderizarTabela();
+    atualizarGraficos();
+    atualizarMetricasTempoPorPagina();
+}
 
     function removerLog(id) {
         let logs = carregarLogs();
@@ -3163,6 +3253,7 @@ function iniciarOuvinteFirebase() {
         salvarLogs(logs);
         renderizarTabela();
         atualizarGraficos();
+        atualizarMetricasTempoPorPagina(); // 👈 ADICIONE ESTA LINHA
     }
 
     function limparTodosLogs() {
@@ -3170,6 +3261,7 @@ function iniciarOuvinteFirebase() {
             salvarLogs([]);
             renderizarTabela();
             atualizarGraficos();
+            atualizarMetricasTempoPorPagina();
         }
     }
 
@@ -3196,8 +3288,10 @@ function iniciarOuvinteFirebase() {
     }
     let html = '';
     logs.slice().reverse().forEach(log => {
-        const tempo = `${log.horas}h ${log.minutos}m`;
-        html += `
+       const tempo = log.horas > 0 
+            ? `${log.horas}h ${log.minutos}m (${log.horas * 60 + log.minutos} min)`
+            : `${log.minutos}m`;
+       html += `
             <tr>
                 <td style="padding: 6px;">${log.data}</td>
                 <td style="padding: 6px;">${log.nivel1}</td>
@@ -3716,23 +3810,31 @@ function renderizarTabelaDesempenho() {
     renderizarTabelaDesempenho();
 
     // ---------- 9. OBSERVADOR PARA ATUALIZAR QUANDO A ABA FOR ATIVADA ----------
-    function ativarObservador() {
-        const observer = new MutationObserver(() => {
-            if (container.classList.contains('active')) {
-                carregarEstatisticasAutomaticas();
-                renderizarTabela();
-                const logs = carregarLogs();
-                if (logs.length > 0) atualizarGraficos();
-            }
-        });
-        observer.observe(container, { attributes: true, attributeFilter: ['class'] });
+function ativarObservador() {
+    const observer = new MutationObserver(() => {
         if (container.classList.contains('active')) {
             carregarEstatisticasAutomaticas();
             renderizarTabela();
             const logs = carregarLogs();
-            if (logs.length > 0) atualizarGraficos();
+            if (logs.length > 0) {
+                atualizarGraficos();
+                // 👇 NOVA CHAMADA AQUI
+                atualizarMetricasTempoPorPagina();
+            }
+        }
+    });
+    observer.observe(container, { attributes: true, attributeFilter: ['class'] });
+    if (container.classList.contains('active')) {
+        carregarEstatisticasAutomaticas();
+        renderizarTabela();
+        const logs = carregarLogs();
+        if (logs.length > 0) {
+            atualizarGraficos();
+            // 👇 E TAMBÉM AQUI (caso a aba já esteja ativa no carregamento)
+            atualizarMetricasTempoPorPagina();
         }
     }
+}
     // ---------- 10. CONFIGURAR BOTÕES ----------
 
         function configurarBotoes() {
@@ -3807,6 +3909,136 @@ function toggleHistorico() {
         if (contador) {
             contador.textContent = '';
         }
+    }
+}
+
+// ============================================================
+// FUNÇÃO PARA CALCULAR MÉTRICAS DE TEMPO POR PÁGINA
+// ============================================================
+
+
+function atualizarMetricasTempoPorPagina() {
+    // Lê os logs do localStorage
+    const logs = JSON.parse(localStorage.getItem('sedes_manual_logs_fallback') || '[]');
+
+    // Filtra apenas registros com páginas > 0 e tempo > 0
+    const registrosValidos = logs.filter(log => 
+        (log.paginas || 0) > 0 && ((log.horas || 0) + (log.minutos || 0)) > 0
+    );
+
+    // Se não houver registros, exibe "---"
+    if (registrosValidos.length === 0) {
+        document.getElementById('mediaGeralMinutosPagina').textContent = '---';
+        document.getElementById('totalPaginasGeral').textContent = '0';
+        document.getElementById('tempoTotalGeral').textContent = '0 min';
+        document.getElementById('corpoMetriasPorDisciplina').innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum dado disponível.</td></tr>';
+        // Se o gráfico existir, destrói
+        if (window.graficoMinutosPagina) {
+            window.graficoMinutosPagina.destroy();
+            window.graficoMinutosPagina = null;
+        }
+        return;
+    }
+
+    // Calcula totais gerais
+    let totalPaginas = 0;
+    let totalMinutos = 0;
+    registrosValidos.forEach(log => {
+        const minutos = (log.horas || 0) * 60 + (log.minutos || 0);
+        totalPaginas += log.paginas;
+        totalMinutos += minutos;
+    });
+    const mediaGeral = totalMinutos / totalPaginas;
+
+    // Exibe totais gerais com formatação
+    document.getElementById('mediaGeralMinutosPagina').textContent = mediaGeral.toFixed(2);
+    document.getElementById('totalPaginasGeral').textContent = totalPaginas;
+
+    // Formata tempo total: Xh Ym (total min)
+    const totalMinutosFormatado = totalMinutos >= 60 
+        ? `${Math.floor(totalMinutos / 60)}h ${totalMinutos % 60}min (${totalMinutos} min)`
+        : `${totalMinutos} min`;
+    document.getElementById('tempoTotalGeral').textContent = totalMinutosFormatado;
+
+    // Agrupa por disciplina (Nível 2)
+    const disciplinas = {};
+    registrosValidos.forEach(log => {
+        const nome = log.nivel2 || 'Outros';
+        if (!disciplinas[nome]) {
+            disciplinas[nome] = { paginas: 0, minutos: 0 };
+        }
+        const minutos = (log.horas || 0) * 60 + (log.minutos || 0);
+        disciplinas[nome].paginas += log.paginas;
+        disciplinas[nome].minutos += minutos;
+    });
+
+    // Monta a tabela de detalhamento
+    const corpo = document.getElementById('corpoMetriasPorDisciplina');
+    let html = '';
+    let labels = [];
+    let dados = [];
+    for (const [nome, dadosDisciplina] of Object.entries(disciplinas)) {
+        const media = dadosDisciplina.minutos / dadosDisciplina.paginas;
+        const tempoExibicao = dadosDisciplina.minutos >= 60 
+            ? `${Math.floor(dadosDisciplina.minutos / 60)}h ${dadosDisciplina.minutos % 60}min (${dadosDisciplina.minutos} min)`
+            : `${dadosDisciplina.minutos} min`;
+        html += `<tr>
+                    <td>${nome}</td>
+                    <td>${dadosDisciplina.paginas}</td>
+                    <td>${tempoExibicao}</td>
+                    <td><strong>${media.toFixed(2)}</strong></td>
+                </tr>`;
+        labels.push(nome);
+        dados.push(media);
+    }
+    corpo.innerHTML = html;
+
+    // Atualiza o gráfico (Minutos por página)
+    const ctx = document.getElementById('graficoMinutosPorPagina');
+    if (ctx) {
+        // Se já existe um gráfico, destrói
+        if (window.graficoMinutosPagina) {
+            window.graficoMinutosPagina.destroy();
+        }
+        // Cria novo gráfico com dados numéricos e formatação do eixo Y
+        window.graficoMinutosPagina = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Minutos por página',
+                    data: dados, // garanta que são números
+                    backgroundColor: 'rgba(30, 111, 92, 0.7)',
+                    borderColor: '#1e6f5c',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toFixed(2) + ' min/página';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Minutos / página' },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2); // exibe duas casas decimais
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }
 
